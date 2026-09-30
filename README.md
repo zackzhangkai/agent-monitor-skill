@@ -1,92 +1,51 @@
 # Agent Monitor Skill · 多智能体任务监测
 
-在 macOS 上查看 **Codex、Claude Code、WorkBuddy** 的项目、会话、进程与监听端口，并让智能体根据证据解释“哪些还在跑”。
+Codex、Claude Code、WorkBuddy 同时开了很多项目，不知道哪些还在跑？把下面的安装指令复制到你使用的 Agent，安装后用一句话查看项目、会话和后台服务。
 
-![配套 Obsidian 插件的演示界面，使用虚构数据](images/dashboard.png)
+目前检测功能支持 **macOS**，需要 **Python 3.9+**。
 
-> 上图来自[配套 Obsidian 插件](https://github.com/zackzhangkai/obsidian-agent-monitor)，使用虚构数据。本仓库提供 Skill 和命令行检测器；安装 Skill 不会自动安装图形插件。
+## 第一部分：安装
 
-## 能做什么
+选择你使用的 Agent，复制对应整段文字发送给它，让它完成安装。无需自己在终端输入命令。
 
-- 自动发现最近的本地会话，按项目目录整理。
-- 同时查看工具进程与 TCP 监听地址。
-- 输出 JSON 快照及 Obsidian 可读的 Markdown 工作台。
-- 保留状态证据，区分“一轮已结束”“近期活动”“状态未确认”。
+### Codex
 
-**进程存活不代表任务正在执行；一轮响应结束不代表项目已验收。**
+```text
+请帮我安装 agent-monitor Skill，仓库地址：
+https://github.com/zackzhangkai/agent-monitor-skill
 
-## 安装 Skill
-
-需要 macOS、Python 3.9+ 和 Git；Python 仅使用标准库。
-
-```sh
-git clone https://github.com/zackzhangkai/agent-monitor-skill.git
+请读取仓库里的 skills/agent-monitor/SKILL.md，将整个 skills/agent-monitor 目录安装到 ~/.codex/skills/agent-monitor，保留 scripts 等配套文件。检查当前 Mac 是否有 Python 3.9 或以上版本；如果已有同名 Skill，请先检查本地修改，不要直接覆盖。完成后告诉我安装结果，以及是否需要重新启动或开启新会话。
 ```
 
-Codex 安装：
+### Claude Code
 
-```sh
-mkdir -p ~/.codex/skills
-cp -R agent-monitor-skill/skills/agent-monitor ~/.codex/skills/
+```text
+请帮我安装 agent-monitor Skill，仓库地址：
+https://github.com/zackzhangkai/agent-monitor-skill
+
+请读取仓库里的 skills/agent-monitor/SKILL.md，将整个 skills/agent-monitor 目录安装到 ~/.claude/skills/agent-monitor，保留 scripts 等配套文件。检查当前 Mac 是否有 Python 3.9 或以上版本；如果已有同名 Skill，请先检查本地修改，不要直接覆盖。完成后告诉我安装结果，以及是否需要重新启动或开启新会话。
 ```
 
-Claude Code 安装：
+### WorkBuddy / 其他支持本地 Skill 的 Agent
 
-```sh
-mkdir -p ~/.claude/skills
-cp -R agent-monitor-skill/skills/agent-monitor ~/.claude/skills/
+```text
+请帮我安装 agent-monitor Skill，仓库地址：
+https://github.com/zackzhangkai/agent-monitor-skill
+
+请先确认当前工具支持的本地 Skill 安装方式和目录，再读取仓库里的 skills/agent-monitor/SKILL.md，将整个 skills/agent-monitor 目录安装到正确位置，保留 scripts 等配套文件。不要套用 Codex 或 Claude Code 的安装目录。检查当前 Mac 是否有 Python 3.9 或以上版本；如果已有同名 Skill，请先检查本地修改，不要直接覆盖。如果当前工具不支持安装本地 Skill，请明确说明，并告诉我如何在当前会话中读取 SKILL.md 和运行配套检测脚本。完成后告诉我安装结果。
 ```
 
-如果已有同名目录，先检查本地修改，再选择更新方式。重新启动工具后，请求：
+WorkBuddy 的安装方式取决于当前版本；检测器可以读取其本地会话记录。安装完成后，按 Agent 的提示重新启动或开启新会话。
 
-> 使用 agent-monitor，检查最近 14 天的智能体项目，列出需要关注的会话和仍在监听的服务。
+## 第二部分：使用
 
-检测器支持读取 WorkBuddy 的本地记录；这里不声明 WorkBuddy 支持安装该 Skill。
+安装好后，把下面这句话粘贴到 Agent：
 
-## 直接生成 Obsidian 工作台
-
-在克隆的仓库目录运行，将路径替换成自己的 Vault：
-
-```sh
-python3 skills/agent-monitor/scripts/monitor.py \
-  --vault "/path/to/your/vault" \
-  --output-dir "/path/to/your/vault/AgentMonitor" \
-  --days 14
+```text
+使用 agent-monitor，检查最近 14 天 Codex、Claude Code 和 WorkBuddy 的项目，告诉我哪些有活动、哪些需要关注、哪些后台服务还在运行。请按项目整理结果，注明检测时间，并区分“任务有执行证据”“进程仍存活”和“状态未确认”。
 ```
 
-生成 `自动监测.md`、`snapshot.json` 和 `.monitor.lock`。一次运行检测一次；如需每 30 秒更新，可在终端运行：
-
-```sh
-while true; do
-  python3 skills/agent-monitor/scripts/monitor.py \
-    --vault "/path/to/your/vault" \
-    --output-dir "/path/to/your/vault/AgentMonitor" --days 14
-  sleep 30
-done
-```
-
-按 **Ctrl+C** 停止。扫描耗时另计；不安装开机服务。图形看板与 Obsidian 内自动刷新请使用[配套插件](https://github.com/zackzhangkai/obsidian-agent-monitor)。
-
-## 数据来源与边界
-
-| 来源 | 读取内容 |
-| --- | --- |
-| Codex | `~/.codex/state_5.sqlite` 及数据库引用的 rollout 日志尾部 |
-| Claude Code | `~/.claude/projects/*/*.jsonl` 的近期会话元数据及事件 |
-| WorkBuddy | `~/.workbuddy/workbuddy.db` 的会话状态 |
-| macOS | `ps` 进程信息、`lsof` 工作目录及 TCP 监听地址 |
-
-每个来源最多读取 300 个近期会话；默认历史窗口 14 天。数据库采用只读连接，不修改会话、配置或原有笔记，不停止进程，不发送网络请求。应用未安装或数据库结构变化时，会显示读取错误，其余来源仍继续检测。
-
-输出包含真实项目路径与会话标题，请勿提交真实快照或私人截图。日志解析可能读到尾部片段中的对话正文，但输出不包含正文或工具命令参数。时间按北京时间（UTC+8）显示。目前不支持 Windows/Linux。
-
-## 开发与贡献
-
-```sh
-python3 -m unittest discover -s tests -v
-```
-
-Skill 位于 `skills/agent-monitor/`。欢迎通过 [Issues](https://github.com/zackzhangkai/agent-monitor-skill/issues) 报告匿名化的兼容问题，或提交 PR 改进解析、状态证据与使用说明。测试与示例请使用虚构数据。
+每次调用检测一次，结果直接显示在对话里。它会读取本机会话记录、进程和监听端口，不修改原有会话，也不会停止任何进程。进程存活不代表任务正在执行，一轮响应结束也不代表项目已验收。
 
 ## 联系与交流
 
@@ -106,3 +65,10 @@ Skill 位于 `skills/agent-monitor/`。欢迎通过 [Issues](https://github.com/
 ## License
 
 [MIT](LICENSE)。独立社区项目，与 OpenAI、Anthropic、腾讯及 Obsidian 无隶属关系。
+
+## 想在 Obsidian 里持续查看？
+
+打开 **Obsidian → 设置 → 第三方插件 → 浏览**，搜索 **Agent Monitor**，安装并启用即可使用图形工作台。Obsidian 打开且插件启用时会自动刷新。
+
+- [Obsidian 官方社区插件目录](https://obsidian.md/plugins)
+- [Agent Monitor 插件 GitHub 仓库](https://github.com/zackzhangkai/obsidian-agent-monitor)
