@@ -1,10 +1,14 @@
-# Agent Monitor Skill · 多智能体任务监测
+# Agent Monitor
 
-Codex、Claude Code、WorkBuddy 同时开了很多项目，不知道哪些还在跑？把下面的安装指令复制到你使用的 Agent，安装后用一句话查看项目、会话和后台服务。
+**一句话，查看多个智能体的项目和运行状态。**
 
-目前检测功能支持 **macOS**，需要 **Python 3.9+**。
+同时使用 Codex、Claude Code 和 WorkBuddy 时，让 Agent 帮你整理有活动的项目、需要关注的会话，以及仍在运行的后台服务。
 
-## 第一部分：安装
+**复制安装指令 → 发送给 Agent → 安装后粘贴使用指令。**
+
+适用于 **macOS · Python 3.9+**。不需要 Obsidian，也不需要自己输入终端命令。
+
+## 1. 复制安装指令
 
 选择你使用的 Agent，复制对应整段文字发送给它，让它完成安装。无需自己在终端输入命令。
 
@@ -14,7 +18,11 @@ Codex、Claude Code、WorkBuddy 同时开了很多项目，不知道哪些还在
 请帮我安装 agent-monitor Skill，仓库地址：
 https://github.com/zackzhangkai/agent-monitor-skill
 
-请读取仓库里的 skills/agent-monitor/SKILL.md，将整个 skills/agent-monitor 目录安装到 ~/.codex/skills/agent-monitor，保留 scripts 等配套文件。检查当前 Mac 是否有 Python 3.9 或以上版本；如果已有同名 Skill，请先检查本地修改，不要直接覆盖。完成后告诉我安装结果，以及是否需要重新启动或开启新会话。
+请阅读 skills/agent-monitor/SKILL.md，并把整个 Skill 目录（含配套脚本）安装到：
+~/.codex/skills/agent-monitor
+
+检查 Python 是否为 3.9 或以上版本。已有同名 Skill 时，请保留本地修改。
+完成后告诉我是否安装成功，以及是否需要重启或开启新会话。
 ```
 
 ### Claude Code
@@ -23,7 +31,11 @@ https://github.com/zackzhangkai/agent-monitor-skill
 请帮我安装 agent-monitor Skill，仓库地址：
 https://github.com/zackzhangkai/agent-monitor-skill
 
-请读取仓库里的 skills/agent-monitor/SKILL.md，将整个 skills/agent-monitor 目录安装到 ~/.claude/skills/agent-monitor，保留 scripts 等配套文件。检查当前 Mac 是否有 Python 3.9 或以上版本；如果已有同名 Skill，请先检查本地修改，不要直接覆盖。完成后告诉我安装结果，以及是否需要重新启动或开启新会话。
+请阅读 skills/agent-monitor/SKILL.md，并把整个 Skill 目录（含配套脚本）安装到：
+~/.claude/skills/agent-monitor
+
+检查 Python 是否为 3.9 或以上版本。已有同名 Skill 时，请保留本地修改。
+完成后告诉我是否安装成功，以及是否需要重启或开启新会话。
 ```
 
 ### WorkBuddy / 其他支持本地 Skill 的 Agent
@@ -32,20 +44,32 @@ https://github.com/zackzhangkai/agent-monitor-skill
 请帮我安装 agent-monitor Skill，仓库地址：
 https://github.com/zackzhangkai/agent-monitor-skill
 
-请先确认当前工具支持的本地 Skill 安装方式和目录，再读取仓库里的 skills/agent-monitor/SKILL.md，将整个 skills/agent-monitor 目录安装到正确位置，保留 scripts 等配套文件。不要套用 Codex 或 Claude Code 的安装目录。检查当前 Mac 是否有 Python 3.9 或以上版本；如果已有同名 Skill，请先检查本地修改，不要直接覆盖。如果当前工具不支持安装本地 Skill，请明确说明，并告诉我如何在当前会话中读取 SKILL.md 和运行配套检测脚本。完成后告诉我安装结果。
+请先确认当前 Agent 的本地 Skill 安装方式和目录。
+阅读 skills/agent-monitor/SKILL.md，把整个 Skill 目录（含配套脚本）安装到正确位置。
+检查 Python 是否为 3.9 或以上版本。已有同名 Skill 时，请保留本地修改。
+如果不支持安装本地 Skill，请说明，并尝试在当前会话中读取 SKILL.md、运行配套脚本。
+完成后告诉我安装结果，以及下次如何调用。
 ```
 
 WorkBuddy 的安装方式取决于当前版本；检测器可以读取其本地会话记录。安装完成后，按 Agent 的提示重新启动或开启新会话。
 
-## 第二部分：使用
+## 2. 粘贴这句话，开始使用
 
 安装好后，把下面这句话粘贴到 Agent：
 
 ```text
-使用 agent-monitor，检查最近 14 天 Codex、Claude Code 和 WorkBuddy 的项目，告诉我哪些有活动、哪些需要关注、哪些后台服务还在运行。请按项目整理结果，注明检测时间，并区分“任务有执行证据”“进程仍存活”和“状态未确认”。
+使用 agent-monitor，检查最近 14 天 Codex、Claude Code 和 WorkBuddy 的项目，告诉我哪些有活动、哪些需要关注、哪些后台服务还在运行。
 ```
 
-每次调用检测一次，结果直接显示在对话里。它会读取本机会话记录、进程和监听端口，不修改原有会话，也不会停止任何进程。进程存活不代表任务正在执行，一轮响应结束也不代表项目已验收。
+你会在对话中看到：
+
+| 你想知道的事 | Agent 会整理的内容 |
+| --- | --- |
+| 哪些项目有活动？ | 最近会话、记录时间和匹配进程 |
+| 哪些任务需要关注？ | 异常、中断、终止及状态未确认的会话 |
+| 哪些后台服务还开着？ | 服务进程、监听端口和工作目录 |
+
+每次调用检测一次。它只读取本机记录，不修改会话、不停止进程。**进程存活不等于任务正在执行；一轮响应结束不等于项目已验收。**
 
 ## 联系与交流
 
