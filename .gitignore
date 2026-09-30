@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.monitor.lock
+snapshot.json
+自动监测.md
+.DS_Store
